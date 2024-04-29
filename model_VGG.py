@@ -21,9 +21,6 @@ def build_model(im_shape, vocab_size, num_answers, big_model):
   #x1 = MaxPooling2D()(x1)
   #x1 = Conv2D(32, 5, padding='same', kernel_regularizer=l2(0.001))(x1)
   #x1 = MaxPooling2D()(x1)
-  #if big_model:
-    #x1 = Conv2D(64, 3, padding='same')(x1)
-    #x1 = MaxPooling2D()(x1)
   x1 = base_model(im_input)  # Use the base model as a feature extractor
   x1 = Flatten()(x1)
   x1 = Dense(256, activation='relu')(x1)
@@ -33,13 +30,13 @@ def build_model(im_shape, vocab_size, num_answers, big_model):
   q_input = Input(shape=(vocab_size,))
   # x2 = Dense(32, activation='tanh')(q_input)
   # x2 = Dense(32, activation='tanh')(x2)
-  x2 = Embedding(vocab_size, 32)(q_input) # 使用Embedding层而不是Dense层
-  x2 = Bidirectional(LSTM(32, return_sequences=True))(x2) # 使用LSTM编码序列 
+  x2 = Embedding(vocab_size, 32)(q_input) # Embedding
+  x2 = Bidirectional(LSTM(32, return_sequences=True))(x2) # LSTM
   
-  # Attention融合 
+  # Attention merge
   #x2_att = Attention()([x2, x2]) 
   x2 = GlobalAveragePooling1D()(x2)
-  x2 = Dropout(0.5)(x2)  # 平均池化
+  x2 = Dropout(0.5)(x2)  # average pool
   # Merge -> output
   out = Concatenate()([x1, x2])
   out = Dense(128, activation='relu')(out)
